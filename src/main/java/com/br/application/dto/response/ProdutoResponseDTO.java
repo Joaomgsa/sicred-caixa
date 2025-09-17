@@ -1,4 +1,7 @@
 package com.br.application.dto.response;
 
-public class ProdutoResponseDTO {
+import java.math.BigDecimal;
+
+public record ProdutoResponseDTO(Integer id, String nome, BigDecimal taxaJurosAnual, Integer prazoMaximoMeses) {
+
 }
