@@ -8,10 +8,11 @@ import com.br.domain.repository.ProdutoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
-import java.math.BigDecimal;
+
 import java.util.List;
-import java.util.Optional;
+
 
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
@@ -21,7 +22,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public List<ProdutoResponseDTO> listarProdutos() {
-        return produtoRepository.listAll()
+        return produtoRepository.buscarProdutosAtivos()
                 .stream()
                 .map(ProdutoMapper::toResponseDTO)
                 .toList();
@@ -61,14 +62,11 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Transactional
     public void deletarProduto(Long codigo) {
         Produto produto = produtoRepository.findById(codigo);
-        if (produto != null) {
-            produto.setStAtivo(false);
+        if (produto == null) {
+            throw new NotFoundException("Produto não encontrado para o id: " + codigo);
         }
+        produto.setStAtivo(false);
         produtoRepository.persist(produto);
     }
-
-
-
-
 
 }
