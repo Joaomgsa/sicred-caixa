@@ -35,7 +35,7 @@ public class ProdutoController {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response salvarProduto(ProdutoRequestDTO request) {
+    public Response salvarProduto(@Valid ProdutoRequestDTO request) {
         return Response.ok(produtoService.salvarProduto(request)).build();
     }
 
