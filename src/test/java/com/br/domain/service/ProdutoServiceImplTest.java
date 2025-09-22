@@ -39,6 +39,9 @@ class ProdutoServiceImplTest {
     private Produto produto;
     private ProdutoRequestDTO produtoRequestDTO;
 
+    private ProdutoResponseDTO produtoResponseDTO;
+    private ProdutoDTO produtoDTO;
+
     @BeforeEach
     void setUp() {
         produto = new Produto();
@@ -54,6 +57,20 @@ class ProdutoServiceImplTest {
                 new BigDecimal("1.5000"),
                 (short) 12
         );
+
+        produtoResponseDTO = new ProdutoResponseDTO(
+                produto.getCoProduto().intValue(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas().intValue()
+        );
+
+        produtoDTO = new ProdutoDTO(
+                produto.getCoProduto(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas()
+        );
     }
 
     // Testes para listarProdutos()
@@ -62,13 +79,6 @@ class ProdutoServiceImplTest {
     void listarProdutos_DeveRetornarListaDeProdutosAtivos_QuandoExistemProdutos() {
         // Given
         List<Produto> produtos = Arrays.asList(produto);
-        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
-                produto.getCoProduto().intValue(),
-                produto.getNoProduto(),
-                produto.getPcTaxaJuros(),
-                produto.getNuMaximoParcelas().intValue()
-        );
-        
         when(produtoRepository.buscarProdutosAtivos()).thenReturn(produtos);
         when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
 
@@ -104,6 +114,7 @@ class ProdutoServiceImplTest {
     void buscarProdutoPorCodigo_DeveRetornarProdutoResponseDTO_QuandoProdutoExiste() {
         // Given
         when(produtoRepository.findById(1L)).thenReturn(produto);
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
 
         // When
         ProdutoResponseDTO resultado = produtoService.buscarProdutoPorCodigo(1L);
@@ -115,6 +126,7 @@ class ProdutoServiceImplTest {
         assertEquals(produto.getPcTaxaJuros(), resultado.taxaJurosAnual());
         assertEquals(produto.getNuMaximoParcelas().intValue(), resultado.prazoMaximoMeses());
         verify(produtoRepository, times(1)).findById(1L);
+        verify(produtoMapper, times(1)).toResponseDTO(produto);
     }
 
     @Test
@@ -136,6 +148,7 @@ class ProdutoServiceImplTest {
     void buscarProdutoDTOPorCodigo_DeveRetornarProdutoDTO_QuandoProdutoExiste() {
         // Given
         when(produtoRepository.findById(1L)).thenReturn(produto);
+        when(produtoMapper.toDTO(produto)).thenReturn(produtoDTO);
 
         // When
         ProdutoDTO resultado = produtoService.buscarProdutoDTOPorCodigo(1L);
@@ -147,6 +160,7 @@ class ProdutoServiceImplTest {
         assertEquals(produto.getPcTaxaJuros(), resultado.pcTaxaJuros());
         assertEquals(produto.getNuMaximoParcelas(), resultado.nuMaximoParcelas());
         verify(produtoRepository, times(1)).findById(1L);
+        verify(produtoMapper, times(1)).toDTO(produto);
     }
 
     @Test
@@ -167,11 +181,15 @@ class ProdutoServiceImplTest {
     @Test
     void salvarProduto_DevePersistirERetornarProduto_QuandoDadosValidos() {
         // Given
+        Produto novoProduto = new Produto();
+        when(produtoMapper.responseToEntity(produtoRequestDTO, true)).thenReturn(novoProduto);
+        when(produtoMapper.toResponseDTO(novoProduto)).thenReturn(produtoResponseDTO);
+        
         doAnswer(invocation -> {
             Produto produto = invocation.getArgument(0);
             produto.setCoProduto(1L); // Simula a geração do ID após persistência
             return null;
-        }).when(produtoRepository).persist(any(Produto.class));
+        }).when(produtoRepository).persist(novoProduto);
 
         // When
         ProdutoResponseDTO resultado = produtoService.salvarProduto(produtoRequestDTO);
@@ -181,17 +199,22 @@ class ProdutoServiceImplTest {
         assertEquals(produtoRequestDTO.nome(), resultado.nome());
         assertEquals(produtoRequestDTO.taxaJurosAnual(), resultado.taxaJurosAnual());
         assertEquals(produtoRequestDTO.prazoMaximoMeses().intValue(), resultado.prazoMaximoMeses());
-        verify(produtoRepository, times(1)).persist(any(Produto.class));
+        verify(produtoMapper, times(1)).responseToEntity(produtoRequestDTO, true);
+        verify(produtoRepository, times(1)).persist(novoProduto);
+        verify(produtoMapper, times(1)).toResponseDTO(novoProduto);
     }
 
     @Test
     void salvarProduto_DeveLancarExcecao_QuandoFalhaAoPersistir() {
         // Given
-        doThrow(new RuntimeException("Erro de persistência")).when(produtoRepository).persist(any(Produto.class));
+        Produto novoProduto = new Produto();
+        when(produtoMapper.responseToEntity(produtoRequestDTO, true)).thenReturn(novoProduto);
+        doThrow(new RuntimeException("Erro de persistência")).when(produtoRepository).persist(novoProduto);
 
         // When & Then
         assertThrows(RuntimeException.class, () -> produtoService.salvarProduto(produtoRequestDTO));
-        verify(produtoRepository, times(1)).persist(any(Produto.class));
+        verify(produtoMapper, times(1)).responseToEntity(produtoRequestDTO, true);
+        verify(produtoRepository, times(1)).persist(novoProduto);
     }
 
     // Testes para atualizarProduto()
@@ -200,6 +223,7 @@ class ProdutoServiceImplTest {
     void atualizarProduto_DeveAtualizarERetornarProduto_QuandoProdutoExiste() {
         // Given
         when(produtoRepository.findById(1L)).thenReturn(produto);
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
         doNothing().when(produtoRepository).persist(produto);
 
         // When
@@ -213,6 +237,7 @@ class ProdutoServiceImplTest {
         assertTrue(produto.getStAtivo());
         verify(produtoRepository, times(1)).findById(1L);
         verify(produtoRepository, times(1)).persist(produto);
+        verify(produtoMapper, times(1)).toResponseDTO(produto);
     }
 
     @Test

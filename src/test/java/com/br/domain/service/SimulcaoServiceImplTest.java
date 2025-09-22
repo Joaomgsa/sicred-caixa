@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -95,75 +94,78 @@ class SimulcaoServiceImplTest {
     void simular_DeveRetornarSimulacaoResponseDTO_QuandoDadosValidos() {
         // Given
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
         
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
-            
-            // Mock da persistência da simulação - simula geração de ID
-            doAnswer(invocation -> {
-                Simulacao sim = invocation.getArgument(0);
-                sim.setNuSimulacao(123L); // Simula a geração de ID após persistir
-                return null;
-            }).when(simulacaoRepository).persist(any(Simulacao.class));
-            
-            when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
-                    .thenReturn(parcelas);
-            
-            // Mock do produtoMapper.toResponseDTO como método de instância
-            ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
-                    produto.getCoProduto().intValue(),
-                    produto.getNoProduto(),
-                    produto.getPcTaxaJuros(),
-                    produto.getNuMaximoParcelas().intValue()
-            );
-            when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
-            
-            // When
-            SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoRequestDTO);
+        // Mock da persistência da simulação - simula geração de ID
+        doAnswer(invocation -> {
+            Simulacao sim = invocation.getArgument(0);
+            sim.setNuSimulacao(123L); // Simula a geração de ID após persistir
+            return null;
+        }).when(simulacaoRepository).persist(any(Simulacao.class));
+        
+        when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
+                .thenReturn(parcelas);
+        
+        // Mock do produtoMapper.toResponseDTO como método de instância
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
+                produto.getCoProduto().intValue(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas().intValue()
+        );
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
+        
+        // When
+        SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoRequestDTO);
 
-            // Then
-            assertNotNull(resultado);
-            assertNotNull(resultado.produto());
-            assertNotNull(resultado.simulacao());
-            assertEquals(produto.getCoProduto().intValue(), resultado.produto().id());
-            assertEquals(produto.getNoProduto(), resultado.produto().nome());
-            
-            verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
-            verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
-            verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
-            verify(produtoMapper, times(1)).toResponseDTO(produto);
-        }
+        // Then
+        assertNotNull(resultado);
+        assertNotNull(resultado.produto());
+        assertNotNull(resultado.simulacao());
+        assertEquals(produto.getCoProduto().intValue(), resultado.produto().id());
+        assertEquals(produto.getNoProduto(), resultado.produto().nome());
+        
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(produtoMapper, times(1)).dtoToEntity(produtoDTO, true);
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
+        verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
+        verify(produtoMapper, times(1)).toResponseDTO(produto);
     }
 
     @Test
     void simular_DeveUtilizarIdSimulacaoGerado_QuandoSimulacaoFoiPersistida() {
         // Given
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
         
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
-            
-            // Mock da persistência da simulação
-            doAnswer(invocation -> {
-                Simulacao sim = invocation.getArgument(0);
-                sim.setNuSimulacao(456L); // ID gerado
-                return null;
-            }).when(simulacaoRepository).persist(any(Simulacao.class));
-            
-            when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
-                    .thenReturn(parcelas);
+        // Mock da persistência da simulação
+        doAnswer(invocation -> {
+            Simulacao sim = invocation.getArgument(0);
+            sim.setNuSimulacao(456L); // ID gerado
+            return null;
+        }).when(simulacaoRepository).persist(any(Simulacao.class));
+        
+        when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
+                .thenReturn(parcelas);
 
-            // When
-            SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoRequestDTO);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
+                produto.getCoProduto().intValue(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas().intValue()
+        );
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
 
-            // Then
-            assertNotNull(resultado);
-            
-            // Verifica se o método foi chamado com o DTO que deveria ter o ID da simulação
-            verify(parcelaService, times(1)).calcularParcelasDTO(
-                argThat(dto -> dto.idSimulacao() != null && dto.idSimulacao().equals("456")), eq(produtoDTO));
-            verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
-        }
+        // When
+        SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoRequestDTO);
+
+        // Then
+        assertNotNull(resultado);
+        
+        // Verifica se o método foi chamado com o DTO que deveria ter o ID da simulação
+        verify(parcelaService, times(1)).calcularParcelasDTO(
+            argThat(dto -> dto.idSimulacao() != null && dto.idSimulacao().equals("456")), eq(produtoDTO));
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
     }
 
     // Testes de cenários de erro
@@ -194,48 +196,60 @@ class SimulcaoServiceImplTest {
     }
 
     @Test
+    void simular_DeveLancarExcecao_QuandoRepositorioFalha() {
+        // Given
+        when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
+        
+        doThrow(new RuntimeException("Erro de persistência")).when(simulacaoRepository).persist(any(Simulacao.class));
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> simulcaoService.simular(simulacaoRequestDTO));
+        assertEquals("Erro de persistência", exception.getMessage());
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
+        verify(parcelaService, never()).calcularParcelasDTO(any(), any());
+    }
+
+    @Test
     void simular_DeveLancarExcecao_QuandoParcelaServiceFalha() {
         // Given
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
         
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
-            
-            doAnswer(invocation -> {
-                Simulacao sim = invocation.getArgument(0);
-                sim.setNuSimulacao(123L);
-                return null;
-            }).when(simulacaoRepository).persist(any(Simulacao.class));
-            
-            when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
-                    .thenThrow(new RuntimeException("Erro no cálculo de parcelas"));
+        doAnswer(invocation -> {
+            Simulacao sim = invocation.getArgument(0);
+            sim.setNuSimulacao(123L);
+            return null;
+        }).when(simulacaoRepository).persist(any(Simulacao.class));
+        
+        when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
+                .thenThrow(new RuntimeException("Erro no cálculo de parcelas"));
 
-            // When & Then
-            RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> simulcaoService.simular(simulacaoRequestDTO));
-            assertEquals("Erro no cálculo de parcelas", exception.getMessage());
-            verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
-            verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
-            verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
-        }
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> simulcaoService.simular(simulacaoRequestDTO));
+        assertEquals("Erro no cálculo de parcelas", exception.getMessage());
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
+        verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
     }
 
     @Test
     void simular_DeveLancarExcecao_QuandoMapperFalha() {
         // Given
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
-        
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true))
-                    .thenThrow(new RuntimeException("Erro no mapeamento"));
+        when(produtoMapper.dtoToEntity(produtoDTO, true))
+                .thenThrow(new RuntimeException("Erro no mapeamento"));
 
-            // When & Then
-            RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> simulcaoService.simular(simulacaoRequestDTO));
-            assertEquals("Erro no mapeamento", exception.getMessage());
-            verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
-            verify(parcelaService, never()).calcularParcelasDTO(any(), any());
-        }
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> simulcaoService.simular(simulacaoRequestDTO));
+        assertEquals("Erro no mapeamento", exception.getMessage());
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(produtoMapper, times(1)).dtoToEntity(produtoDTO, true);
+        verify(parcelaService, never()).calcularParcelasDTO(any(), any());
     }
 
     @Test
@@ -249,34 +263,39 @@ class SimulcaoServiceImplTest {
         );
         
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
         
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
-            
-            // Mock da persistência da simulação
-            doAnswer(invocation -> {
-                Simulacao sim = invocation.getArgument(0);
-                sim.setNuSimulacao(123L);
-                return null;
-            }).when(simulacaoRepository).persist(any(Simulacao.class));
-            
-            List<ParcelaDTO> parcelaMinima = Arrays.asList(
-                    new ParcelaDTO(1, new BigDecimal("0.01"), new BigDecimal("0.00"), 
-                                  new BigDecimal("0.01"), new BigDecimal("0.00"))
-            );
-            
-            when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
-                    .thenReturn(parcelaMinima);
+        // Mock da persistência da simulação
+        doAnswer(invocation -> {
+            Simulacao sim = invocation.getArgument(0);
+            sim.setNuSimulacao(123L);
+            return null;
+        }).when(simulacaoRepository).persist(any(Simulacao.class));
+        
+        List<ParcelaDTO> parcelaMinima = Arrays.asList(
+                new ParcelaDTO(1, new BigDecimal("0.01"), new BigDecimal("0.00"), 
+                              new BigDecimal("0.01"), new BigDecimal("0.00"))
+        );
+        
+        when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
+                .thenReturn(parcelaMinima);
 
-            // When
-            SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoMinima);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
+                produto.getCoProduto().intValue(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas().intValue()
+        );
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
 
-            // Then
-            assertNotNull(resultado);
-            verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
-            verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
-            verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
-        }
+        // When
+        SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoMinima);
+
+        // Then
+        assertNotNull(resultado);
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
+        verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
     }
 
     @Test
@@ -290,28 +309,33 @@ class SimulcaoServiceImplTest {
         );
         
         when(produtoService.buscarProdutoDTOPorCodigo(1L)).thenReturn(produtoDTO);
+        when(produtoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
         
-        try (MockedStatic<ProdutoMapper> mockedMapper = mockStatic(ProdutoMapper.class)) {
-            mockedMapper.when(() -> ProdutoMapper.dtoToEntity(produtoDTO, true)).thenReturn(produto);
-            
-            // Mock da persistência da simulação
-            doAnswer(invocation -> {
-                Simulacao sim = invocation.getArgument(0);
-                sim.setNuSimulacao(789L);
-                return null;
-            }).when(simulacaoRepository).persist(any(Simulacao.class));
-            
-            when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
-                    .thenReturn(parcelas);
+        // Mock da persistência da simulação
+        doAnswer(invocation -> {
+            Simulacao sim = invocation.getArgument(0);
+            sim.setNuSimulacao(789L);
+            return null;
+        }).when(simulacaoRepository).persist(any(Simulacao.class));
+        
+        when(parcelaService.calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO)))
+                .thenReturn(parcelas);
 
-            // When
-            SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoMaxima);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(
+                produto.getCoProduto().intValue(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas().intValue()
+        );
+        when(produtoMapper.toResponseDTO(produto)).thenReturn(produtoResponseDTO);
 
-            // Then
-            assertNotNull(resultado);
-            verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
-            verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
-            verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
-        }
+        // When
+        SimulacaoResponseDTO resultado = simulcaoService.simular(simulacaoMaxima);
+
+        // Then
+        assertNotNull(resultado);
+        verify(produtoService, times(1)).buscarProdutoDTOPorCodigo(1L);
+        verify(simulacaoRepository, times(1)).persist(any(Simulacao.class));
+        verify(parcelaService, times(1)).calcularParcelasDTO(any(SimulacaoRequestDTO.class), eq(produtoDTO));
     }
 }
