@@ -7,6 +7,7 @@ import com.br.domain.mapper.ParcelaMapper;
 import com.br.domain.model.Parcela;
 import com.br.domain.model.Produto;
 import com.br.domain.repository.ParcelaRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class ParcelaServiceImpl implements ParcelaService {
 
     // TODO: Terminar Implementacao da Simulacao e planejar como guardar informacoes de simulacoes por usuario

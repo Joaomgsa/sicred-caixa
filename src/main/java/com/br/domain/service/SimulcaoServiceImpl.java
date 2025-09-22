@@ -3,6 +3,7 @@ package com.br.domain.service;
 import com.br.application.dto.ProdutoDTO;
 import com.br.application.dto.request.SimulacaoRequestDTO;
 import com.br.application.dto.response.ParcelaDTO;
+import com.br.application.dto.response.ProdutoResponseDTO;
 import com.br.application.dto.response.SimulacaoDTO;
 import com.br.application.dto.response.SimulacaoResponseDTO;
 import com.br.domain.mapper.ProdutoMapper;
@@ -47,17 +48,18 @@ public class SimulcaoServiceImpl implements SimulacaoService {
     @Transactional
     public SimulacaoResponseDTO simular(SimulacaoRequestDTO simulacao) {
 
-        ProdutoDTO produtoDTO = produtoService.buscarProdutoDTOPorCodigo(simulacao.idProduto());
-        var produto = produtoMapper.dtoToEntity(produtoDTO, true);
+
+        Produto produto = produtoService.buscarProduto(simulacao.idProduto());
         Simulacao simulacaoPersistida = persistirSimulacao(simulacao, produto);
+        ProdutoResponseDTO produtoRespponseDTO = produtoMapper.toResponseDTO(produto);
+
+        ProdutoDTO produtoDTO = produtoMapper.toDTO(produto);
 
         SimulacaoRequestDTO dtoComIdSimulacao = simulacao.withIdSimulacao(simulacaoPersistida.getNuSimulacao().toString());
 
         List<ParcelaDTO> parcelas =  parcelaService.calcularParcelasDTO(dtoComIdSimulacao, produtoDTO);
 
-        var response = montarResponseSimulacao(parcelas, simulacaoPersistida, produto);
-
-        return response;
+        return montarResponseSimulacao(parcelas, simulacaoPersistida, produtoRespponseDTO);
     }
 
 
@@ -69,7 +71,7 @@ public class SimulcaoServiceImpl implements SimulacaoService {
      *
      */
     @Transactional
-    private Simulacao persistirSimulacao(SimulacaoRequestDTO dto, Produto produto) {
+    public Simulacao persistirSimulacao(SimulacaoRequestDTO dto, Produto produto) {
 
         Simulacao simulacao = new Simulacao();
         simulacao.setProduto(produto);
@@ -102,14 +104,14 @@ public class SimulcaoServiceImpl implements SimulacaoService {
      * 4- Retornar o DTO de resposta.
      * @param parcelas
      * @param simulacao
-     * @param produto
+     * @param produtoResponse
      * @return
      */
-    private SimulacaoResponseDTO montarResponseSimulacao(List<ParcelaDTO> parcelas, Simulacao simulacao, Produto produto) {
+    private SimulacaoResponseDTO montarResponseSimulacao(List<ParcelaDTO> parcelas, Simulacao simulacao, ProdutoResponseDTO produtoResponse) {
 
         var dtoSimulacao = montarDTO(simulacao, parcelas);
         return new SimulacaoResponseDTO(
-                produtoMapper.toResponseDTO(produto),
+                produtoResponse,
                 dtoSimulacao);
     }
 

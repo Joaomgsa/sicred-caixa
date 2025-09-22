@@ -32,6 +32,12 @@ public class ProdutoServiceImpl implements ProdutoService {
                 .toList();
     }
 
+
+    public Produto buscarProduto(Long codigo){
+        Produto produto = produtoRepository.findById(codigo);
+        return produto != null ? produtoRepository.findById(codigo) : null;
+    }
+
     @Override
     public ProdutoResponseDTO buscarProdutoPorCodigo(Long codigo){
         Produto produto = produtoRepository.findById(codigo);

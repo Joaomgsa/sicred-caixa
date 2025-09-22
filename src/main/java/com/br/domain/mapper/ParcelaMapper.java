@@ -2,7 +2,10 @@ package com.br.domain.mapper;
 
 import com.br.application.dto.response.ParcelaDTO;
 import com.br.domain.model.Parcela;
+import jakarta.enterprise.context.ApplicationScoped;
 
+
+@ApplicationScoped
 public class ParcelaMapper {
 
     public static Parcela toEntity(Parcela parcela){

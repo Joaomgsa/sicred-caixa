@@ -20,8 +20,7 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SimulacaoController {
 
-    @Inject
-    HttpServerResponse httpServerResponse;
+
     @Inject
     private SimulacaoService simulacaoService;
 
