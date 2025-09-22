@@ -21,32 +21,35 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Inject
     private ProdutoRepository produtoRepository;
 
+    @Inject
+    private ProdutoMapper produtoMapper;
+
     @Override
     public List<ProdutoResponseDTO> listarProdutos() {
         return produtoRepository.buscarProdutosAtivos()
                 .stream()
-                .map(ProdutoMapper::toResponseDTO)
+                .map(produtoMapper::toResponseDTO)
                 .toList();
     }
 
     @Override
     public ProdutoResponseDTO buscarProdutoPorCodigo(Long codigo){
         Produto produto = produtoRepository.findById(codigo);
-        return produto != null ? ProdutoMapper.toResponseDTO(produto) : null;
+        return produto != null ? produtoMapper.toResponseDTO(produto) : null;
     }
 
     @Override
     public ProdutoDTO buscarProdutoDTOPorCodigo(Long codigo){
         Produto produto = produtoRepository.findById(codigo);
-        return produto != null ? ProdutoMapper.toDTO(produto) : null;
+        return produto != null ? produtoMapper.toDTO(produto) : null;
     }
 
     @Override
     @Transactional
     public ProdutoResponseDTO salvarProduto(ProdutoRequestDTO produto){
-        Produto entity = ProdutoMapper.responseToEntity(produto, true);
+        Produto entity = produtoMapper.responseToEntity(produto, true);
         produtoRepository.persist(entity);
-        return ProdutoMapper.toResponseDTO(entity);
+        return produtoMapper.toResponseDTO(entity);
     }
 
     // TODO: Criar exception para produto nao encontrado
@@ -62,7 +65,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setNuMaximoParcelas(request.prazoMaximoMeses().shortValue());
         produto.setStAtivo(true);
         produtoRepository.persist(produto);
-        return ProdutoMapper.toResponseDTO(produto);
+        return produtoMapper.toResponseDTO(produto);
     }
 
     @Override

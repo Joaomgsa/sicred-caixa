@@ -28,6 +28,9 @@ public class SimulcaoServiceImpl implements SimulacaoService {
     @Inject
     ProdutoMapper produtoMapper;
 
+    @Inject
+    SimulacaoRepository simulacaoRepository;
+
 
     /**
      *
@@ -50,7 +53,7 @@ public class SimulcaoServiceImpl implements SimulacaoService {
 
         SimulacaoRequestDTO dtoComIdSimulacao = simulacao.withIdSimulacao(simulacaoPersistida.getNuSimulacao().toString());
 
-        List<ParcelaDTO> parcelas =  parcelaService.calcularParcelasDTO(simulacao, produtoDTO);
+        List<ParcelaDTO> parcelas =  parcelaService.calcularParcelasDTO(dtoComIdSimulacao, produtoDTO);
 
         var response = montarResponseSimulacao(parcelas, simulacaoPersistida, produto);
 
@@ -74,6 +77,7 @@ public class SimulcaoServiceImpl implements SimulacaoService {
         simulacao.setPrSimulacao(dto.prazoMeses());
         simulacao.setVrSimulacao(dto.valorSolicitado());
 
+        simulacaoRepository.persist(simulacao);
         return simulacao;
     }
 
