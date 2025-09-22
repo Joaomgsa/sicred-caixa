@@ -29,6 +29,6 @@ public class SimulacaoController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response simular(SimulacaoRequestDTO request) {
-        return Response.ok(simulacaoService.).build();
+        return Response.ok(simulacaoService.simular(request)).build();
     }
 }
