@@ -1,5 +1,6 @@
 package com.br.domain.mapper;
 
+import com.br.application.dto.ProdutoDTO;
 import com.br.application.dto.request.ProdutoRequestDTO;
 import com.br.application.dto.response.ProdutoResponseDTO;
 import com.br.domain.model.Produto;
@@ -22,7 +23,7 @@ public class ProdutoMapper {
     }
 
 
-    public static Produto toEntity(ProdutoRequestDTO produto, boolean statusNovo){
+    public static Produto responseToEntity(ProdutoRequestDTO produto, boolean statusNovo){
         Produto entity = new Produto();
         entity.setNoProduto(produto.nome());
         entity.setPcTaxaJuros(produto.taxaJurosAnual());
@@ -30,5 +31,24 @@ public class ProdutoMapper {
         entity.setNuMaximoParcelas(produto.prazoMaximoMeses().shortValue());
         entity.setStAtivo(statusNovo);
         return entity;
+    }
+
+
+    public static Produto dtoToEntity(ProdutoDTO produto, boolean statusNovo){
+        Produto entity = new Produto();
+        entity.setNoProduto(produto.noProduto());
+        entity.setPcTaxaJuros(produto.pcTaxaJuros());
+        entity.setNuMaximoParcelas(produto.nuMaximoParcelas());
+        entity.setStAtivo(statusNovo);
+        return entity;
+    }
+
+    public static ProdutoDTO toDTO(Produto produto){
+        return new ProdutoDTO(
+                produto.getCoProduto(),
+                produto.getNoProduto(),
+                produto.getPcTaxaJuros(),
+                produto.getNuMaximoParcelas()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package com.br.domain.service;
 
+import com.br.application.dto.ProdutoDTO;
 import com.br.application.dto.request.ProdutoRequestDTO;
 import com.br.application.dto.response.ProdutoResponseDTO;
 import com.br.domain.mapper.ProdutoMapper;
@@ -35,9 +36,15 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    public ProdutoDTO buscarProdutoDTOPorCodigo(Long codigo){
+        Produto produto = produtoRepository.findById(codigo);
+        return produto != null ? ProdutoMapper.toDTO(produto) : null;
+    }
+
+    @Override
     @Transactional
     public ProdutoResponseDTO salvarProduto(ProdutoRequestDTO produto){
-        Produto entity = ProdutoMapper.toEntity(produto, true);
+        Produto entity = ProdutoMapper.responseToEntity(produto, true);
         produtoRepository.persist(entity);
         return ProdutoMapper.toResponseDTO(entity);
     }

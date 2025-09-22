@@ -5,24 +5,27 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.math.BigDecimal;
 
-public record SimulacaoRequestDTO(@NotNull(message = "Valor desejado é obrigatório")
-                                  @DecimalMin(value = "500.00", message = "Valor mínimo é R$ 500,00")
+public record SimulacaoRequestDTO(@NotBlank(message = "Valor desejado é obrigatório")
+                                  @DecimalMin(value = "00.01", message = "Valor mínimo é R$ 00,01")
                                   @Digits(integer = 10, fraction = 2, message = "Valor deve ter no máximo 10 dígitos inteiros e 2 decimais")
-                                  BigDecimal valorDesejado,
+                                  BigDecimal valorSolicitado,
 
+                                  @Min(message = "Prazo mínimo é 1 meses", value = 1)
+                                  @NotBlank(message = "Prazo é obrigatório")
+                                  Integer prazoMeses,
 
-                                  @NotNull(message = "Prazo é obrigatório")
-                                  @Min(value = 5, message = "Prazo mínimo é 5 mês")
-                                  @Max(value = 240, message = "Prazo máximo é 240 meses")
-                                  Integer prazo,
+                                  @NotBlank(message = "Id do produto é obrigatório")
+                                  Long idProduto,
 
                                   @Schema(hidden = true)
                                   String idSimulacao
+
+
+
 )
 
 {
-    // Método wither para adicionar ID da simulação
     public SimulacaoRequestDTO withIdSimulacao(String idSimulacao) {
-        return new SimulacaoRequestDTO(this.valorDesejado, this.prazo, idSimulacao);
+        return new SimulacaoRequestDTO(this.valorSolicitado, this.prazoMeses,this.idProduto,  idSimulacao);
     }
 }

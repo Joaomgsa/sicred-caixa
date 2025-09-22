@@ -1,3 +1,5 @@
+-- TODO: Adicionar simulação e parcelas
+
 INSERT INTO tb_produtos (no_produto, pc_taxa_juros_anual, nu_maximo_meses, st_ativo) VALUES
                                                                                          ('Empréstimo Pessoal', 0.120000000, 24, true),
                                                                                          ('Crédito Consignado', 0.080000000, 48, true),

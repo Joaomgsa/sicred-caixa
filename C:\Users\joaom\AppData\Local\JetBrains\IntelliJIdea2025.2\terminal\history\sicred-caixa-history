@@ -1,0 +1,239 @@
+sudo apt update
+sudo apt upgrade
+sudo su
+code .
+cd ..
+ls
+cd repo
+ls
+git clone https://github.com/Datalux/Osintgram.git
+cd Osintgram/
+python3 -m venv venv
+sudo apt install python3.12-venv
+sudo apt-get update
+sudo apt install python3.12-venv
+python3 -m venv venv
+source venv/bin/activate
+nano requirements.txt
+pip install requirements.txt
+ls
+pip install -r requirements.txt
+ls
+cd config
+ls
+nano credentials.ini 
+python3 main.py joaomgsa
+cd ..
+python3 main.py joaomgsa
+python main.py joaomgsa
+ls
+docker pull portainer/helper-reset-password
+docker run --rm -v portainer_data:/data portainer/helper-reset-password
+git clone https://github.com/Joaomgsa/api-desafioverzel.git
+ls
+cd api-desafioverzel/
+docker compose up --build -d 
+cd ..
+git clone https://github.com/Joaomgsa/fe-desafio-verzel.git
+ls
+cd fe-desafio-verzel/
+docker compose up --build -d
+./mvnw clean install
+sudo ./mvnw clean install
+sudo apt update
+sudo apt install openjdk-17-jdk
+java -version
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+echo $JAVA_HOME
+java -version
+./mvnw clean install
+sudo ./mvnw clean install
+ls
+cd src/main/docker
+docker-compose up -d
+git config --global user.email "joaomgsa@gmail.com"
+git config --global user.name "JoaoMgsa"
+cd ..
+git status
+git add .
+git -am [FEAT] PRODUTOS
+git -am "[FEAT] PRODUTOS"
+git -m "[FEAT] PRODUTOS"
+git pull origin master
+git status
+git -m "[FEAT] Pom"
+git add .
+git -m "[FEAT] Pom"
+git status \
+git status 
+git add .
+git commit -m "[FEAT] Pom"
+git push -u origin master
+ls
+cd src/
+ls
+cd main/docker
+docker-compose up -d
+git add .
+git commit -m "[FEAT] endpoint programas"
+git status
+git add .
+git commit -m "[FEAT] endpoint programas"
+git push origin
+git add .
+git commit -m "[FEAT] simulacao"
+git pull origin 
+ls
+git add .
+git commit -m "[FEAT] busca por produto e validação direto via sql"
+java -v
+java -version
+sudo apt install maven
+mvn -v
+mvn clean install
+docker ps
+got 
+sudo apt install net-tools
+netstat -tulpn | grep :8080
+sudo lsof -t -i:8080
+kill -9 38856
+sudo kill -9 38856
+git add .
+sudo git add .
+curl -X POST http://localhost:8080/simulacao   -H "Content-Type: application/json"   -d '{"valorDesejado": 1000.00, "prazo": 12}'
+mvn clean compile
+mvn clean install
+git add .
+sudo git add .
+git commit -m "[FEAT] busca por produto e validação direto via sql"
+sudo git commit -m "[FEAT] busca por produto e validação direto via sql"
+docker ps
+docker-compose down
+cd src/main/docker
+docker-compose down
+docker-compose down -v
+docker ps
+docker-compose stop
+docker-compose down
+docker-compose up -d
+cd ..
+cd ../..
+mvn clean
+sudo rm -rf target/
+mvn clean
+mvn quarkus:dev
+docker-compose up -d
+ls 
+cd src/
+ls
+cd main/docker/
+docker-compose up -d
+git branch
+sudo apt-get update -y
+sudo apt-get upgrade -y
+lsmod | grep kvm
+systemctl status libvirtd
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
+sudo usermod -aG libvirt joaomgsa
+sudo shutdown -r now
+systemctl status libvirtd
+docker ps
+docker stop $(docker ps -q)
+ps
+docker ps
+docker container prune
+systemctl status libvirtd
+sudo systemctl restart libvirtd
+systemctl status libvirtd
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo systemctl restart libvirtd
+systemctl status libvirtd
+sudo snap install kubectl --classic
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+minikube version
+minikube start --driver=kvm2
+minikube delete
+minikube start --driver=docker
+minikube status
+minikube addons list
+minikube addons enable ingress
+minikube addons enable dashboard
+minikube addons enable metrics-server
+kubectl version
+kubectl config set-cluster dell-cluster --server 127.0.0.1:8087
+kubectl config get-clusters
+code .
+kubectl apply -f deployment.yml
+ls
+kubectl apply -f deployment.yml
+ls
+kubectl apply -f deployment.yaml
+kubectl get pods
+git pull origin release
+git status
+git add .
+sudo git add .
+git commit -m "Telemetria"
+sudo git commit -m "Telemetria"
+sudo git fetch 
+sudo git pull origin/release
+sudo git pull origin
+mvn 
+mvn clean install
+ls
+cd .
+cd ..
+cd ../../
+cd ../..
+ls
+cd var 
+ls
+cd ..
+cd dev
+ls
+cd ..
+cd home 
+ls
+cd joaomgsa/
+ls
+cd repo
+ls
+mkdir n8n 
+cd n8n
+code .
+cd /home/joaomgsa/repo/n8n && docker-compose ps
+cd /home/joaomgsa/repo/n8n && docker-compose config
+cd /home/joaomgsa/repo/n8n && docker-compose ps
+cd /home/joaomgsa/repo/n8n && docker-compose logs n8n --tail=50
+cd /home/joaomgsa/repo/n8n && docker-compose logs n8n
+cd /home/joaomgsa/repo/n8n && ls -la
+cd /home/joaomgsa/repo/n8n && sudo chown -R 1000:1000 n8n-data
+cd /home/joaomgsa/repo/n8n && ls -la n8n-data
+cd /home/joaomgsa/repo/n8n && docker-compose down
+cd /home/joaomgsa/repo/n8n && docker-compose up -d
+cd /home/joaomgsa/repo/n8n && sleep 10 && docker-compose ps
+cd /home/joaomgsa/repo/n8n && docker-compose logs n8n | tail -20
+docker compose up -d
+docker ps
+mvn clean install
+java -version
+sudo apt update
+sudo apt install openjdk-21-jdk
+mvn clean package -DskipTests
+docker build -f Dockerfile.jvm -t sicred-caixa:latest .
+ls
+cd src/main/docker/
+docker build -f Dockerfile.jvm -t sicred-caixa:latest .
+./mvnw clean package -DskipTests
+mvn clean package -DskipTests
+cd ../../..
+mvn clean package -DskipTests
+cd src/main/docker
+mvn clean package -DskipTests
+docker build -f Dockerfile.jvm -t sicred-caixa:latest .
+./mvnw test -Dtest=ProdutoServiceImplTest
+chmod +x ./mvnw
+./mvnw test -Dtest=ProdutoServiceImplTest
+mvn clean install
